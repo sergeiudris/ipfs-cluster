@@ -4,6 +4,7 @@ package adderutils
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"sync"
@@ -38,6 +39,9 @@ func AddMultipartHTTPHandler(
 	if params.Shard {
 		dags = sharding.New(rpc, params.PinOptions, output)
 	} else {
+		fmt.Printf("----\n")
+		fmt.Printf("adderutils AddMultipartHTTPHandler params.Local: %v\n", params.Local)
+		fmt.Printf("----\n")
 		dags = single.New(rpc, params.PinOptions, params.Local)
 	}
 

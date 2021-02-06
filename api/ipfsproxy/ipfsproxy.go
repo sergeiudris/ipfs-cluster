@@ -578,6 +578,10 @@ func (proxy *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 		return r
 	}
 
+	fmt.Printf("----\n")
+	fmt.Printf("ipfsproxy addHandler params: %+v\n", params)
+	fmt.Printf("----\n")
+
 	root, err := adderutils.AddMultipartHTTPHandler(
 		proxy.ctx,
 		proxy.rpcClient,

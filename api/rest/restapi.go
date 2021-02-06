@@ -679,6 +679,7 @@ func (api *API) alertsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) addHandler(w http.ResponseWriter, r *http.Request) {
+
 	reader, err := r.MultipartReader()
 	if err != nil {
 		api.sendResponse(w, http.StatusBadRequest, err, nil)
@@ -692,6 +693,10 @@ func (api *API) addHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	api.setHeaders(w)
+
+	fmt.Printf("----\n")
+	fmt.Printf("restapi addHandler params: %+v\n", params)
+	fmt.Printf("----\n")
 
 	// any errors sent as trailer
 	adderutils.AddMultipartHTTPHandler(
