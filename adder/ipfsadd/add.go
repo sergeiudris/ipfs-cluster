@@ -321,6 +321,7 @@ func (adder *Adder) AddAllAndPin(file files.Node) (ipld.Node, error) {
 	// Unsure if this a bug in IPFS when not pinning. Or it would get added
 	// twice.
 	return nd, adder.PinRoot(nd)
+	// return nd, nil
 }
 
 // Cluster: we don't Pause for GC

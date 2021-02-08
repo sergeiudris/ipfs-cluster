@@ -42,6 +42,11 @@ func (ba *BlockAdder) Add(ctx context.Context, node ipld.Node) error {
 	defer rpcutil.MultiCancel(cancels)
 
 	logger.Debugf("block put %s to %s", nodeSerial.Cid, ba.dests)
+
+	fmt.Printf("----\n")
+	fmt.Printf("BlockAdder Add dests: %+v\n", ba.dests)
+	fmt.Printf("----\n")
+
 	errs := ba.rpcClient.MultiCall(
 		ctxs,
 		ba.dests,
@@ -76,6 +81,10 @@ func (ba *BlockAdder) Add(ctx context.Context, node ipld.Node) error {
 	if numErrs == len(ba.dests) || len(successfulDests) == 0 {
 		return ErrBlockAdder
 	}
+
+	fmt.Printf("----\n")
+	fmt.Printf("BlockAdder Add successfulDests: %+v\n", successfulDests)
+	fmt.Printf("----\n")
 
 	ba.dests = successfulDests
 	return nil
