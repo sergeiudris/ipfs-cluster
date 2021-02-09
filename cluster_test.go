@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -427,12 +428,10 @@ func TestRestAndProxyAddFileEndpointLocalParam(t *testing.T) {
 	fmt.Printf("%+v\n", mock0)
 	// fmt.Printf("%+v\n", mock1)
 
-	var a interface{}
-	a = cluster0.apis[0]
+	var a interface{} = cluster0.apis[0]
 	api0, _ := a.(*rest.API)
 
-	var p interface{}
-	p = cluster0.apis[1]
+	var p interface{} = cluster0.apis[1]
 	ipfsproxy0, _ := p.(*ipfsproxy.Server)
 
 	apiHTTPAddresses, _ := api0.HTTPAddresses()
@@ -451,8 +450,10 @@ func TestRestAndProxyAddFileEndpointLocalParam(t *testing.T) {
 
 	fmt.Println(fmt.Sprintf("http://%s/version", apiHTTPAddress))
 
-	// resp, err := http.Get(fmt.Sprintf("http://%s/version", apiHTTPAddress))
-	resp, err := http.Get(fmt.Sprintf("http://%s/api/v0/version", ipfsproxyHTTPAddress))
+	var httpClient = &http.Client{Timeout: 10 * time.Second}
+
+	resp, err := httpClient.Get(fmt.Sprintf("http://%s/version", apiHTTPAddress))
+	// resp, err := http.Get(fmt.Sprintf("http://%s/api/v0/version", ipfsproxyHTTPAddress))
 	if err != nil {
 		//
 	}
@@ -464,6 +465,43 @@ func TestRestAndProxyAddFileEndpointLocalParam(t *testing.T) {
 		panic(err.Error())
 	}
 	fmt.Println(data)
+
+	sth := test.NewShardingTestHelper()
+
+	url := fmt.Sprintf("http://%s/add?local=true", apiHTTPAddress)
+	respPost := api.AddedOutput{}
+
+	bodyPost, closer := sth.GetTreeMultiReader(t)
+	closer.Close()
+	mpContentType := "multipart/form-data; boundary=" + bodyPost.Boundary()
+	req, _ := http.NewRequest(http.MethodPost, url, bodyPost)
+	req.Header.Set("Content-Type", mpContentType)
+	req.Header.Set("Origin", apiHTTPAddress)
+	httpResp, err := httpClient.Do(req)
+
+	if err != nil {
+		t.Fatal("error making streaming request: ", err)
+	}
+
+	defer httpResp.Body.Close()
+	dec := json.NewDecoder(httpResp.Body)
+	for {
+		err := dec.Decode(&respPost)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	fmt.Println("---- post resp")
+	fmt.Printf("%+v\n", respPost)
+
+	if respPost.Cid.String() != test.ShardingDirBalancedRootCID {
+		t.Error("Bad Cid after adding: ", respPost.Cid)
+	}
+
+	fmt.Println(cluster0.Status(ctx, respPost.Cid))
 
 	// fmt.Printf("%v\n", config.Interface())
 
