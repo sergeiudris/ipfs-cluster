@@ -19,6 +19,7 @@ import (
 
 	"github.com/ipfs/ipfs-cluster/allocator/descendalloc"
 	"github.com/ipfs/ipfs-cluster/api"
+	"github.com/ipfs/ipfs-cluster/api/ipfsproxy"
 	"github.com/ipfs/ipfs-cluster/api/rest"
 	"github.com/ipfs/ipfs-cluster/consensus/crdt"
 	"github.com/ipfs/ipfs-cluster/consensus/raft"
@@ -63,9 +64,9 @@ var (
 	testsFolder  = "clusterTestsFolder"
 
 	// When testing with fixed ports...
-	// clusterPort   = 10000
-	// apiPort       = 10100
-	// ipfsProxyPort = 10200
+	clusterPort   = 10000
+	apiPort       = 10100
+	ipfsProxyPort = 10200
 )
 
 type logFacilities []string
@@ -83,6 +84,7 @@ func (lg *logFacilities) Set(value string) error {
 	for _, lf := range strings.Split(value, ",") {
 		*lg = append(*lg, lf)
 	}
+
 	return nil
 }
 
@@ -165,12 +167,13 @@ func createComponents(
 	ctx := context.Background()
 	mock := test.NewIpfsMock(t)
 
-	//apiAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", apiPort+i))
+	apiAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", apiPort+i))
+	fmt.Println(apiAddr)
 	// Bind on port 0
-	apiAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
+	// apiAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
 	// Bind on Port 0
-	// proxyAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", ipfsProxyPort+i))
-	proxyAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
+	proxyAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", ipfsProxyPort+i))
+	// proxyAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
 	nodeAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%d", mock.Addr, mock.Port))
 
 	peername := fmt.Sprintf("peer_%d", i)
@@ -199,7 +202,7 @@ func createComponents(
 		t.Fatal(err)
 	}
 
-	ipfsProxy, err := rest.NewAPI(ctx, apiCfg)
+	ipfsProxy, err := ipfsproxy.New(ipfsproxyCfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -232,6 +235,10 @@ func createComponents(
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// var foo API
+	// foo = api
+	// fmt.Print(foo)
 
 	return clusterCfg, store, cons, []API{api, ipfsProxy}, ipfs, tracker, mon, alloc, inf, tracer, mock
 }

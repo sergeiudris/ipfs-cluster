@@ -2,9 +2,12 @@ package ipfscluster
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -405,6 +408,64 @@ func TestAddFile(t *testing.T) {
 		// We know that this produces 14 shards.
 		sharding.VerifyShards(t, c, cl, cl.ipfs, 14)
 	})
+}
+
+func TestAddFileLocal(t *testing.T) {
+	ctx := context.Background()
+	clusters, mock := createClusters(t)
+	defer shutdownClusters(t, clusters, mock)
+
+	cluster0 := clusters[0]
+	fmt.Printf("%T\n", cluster0)
+	fmt.Printf("%T\n", ctx)
+	mock0 := mock[0]
+	mock1 := mock[1]
+	fmt.Printf("%+v\n", mock0)
+	fmt.Printf("%+v\n", mock1)
+
+	// var a interface{}
+	// a = cluster0.apis[0]
+	// api0, ok := a.(*rest.API)
+	// if !ok {
+
+	// }
+	// api0Refelction := reflect.ValueOf(api0).Elem()
+	// configReflection := api0Refelction.FieldByName("config")
+	// configReflection = reflect.NewAt(configReflection.Type(), unsafe.Pointer(configReflection.UnsafeAddr())).Elem()
+	// fmt.Println(configReflection.Interface())
+
+	resp, err := http.Get("http://localhost:10101/version")
+	if err != nil {
+		//
+	}
+	defer resp.Body.Close()
+	var data map[string]interface{}
+	body, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(data)
+
+	// fmt.Printf("%v\n", config.Interface())
+
+	// t.Run("restapi/add?local=true", func(t *testing.T) {
+
+	// })
+
+	// t.Run("restapi/add?local=false", func(t *testing.T) {
+
+	// })
+
+	// t.Run("ipfsproxy/api/v0/add?local=true", func(t *testing.T) {
+
+	// })
+
+	// t.Run("ipfsproxy/api/v0/add?local=false", func(t *testing.T) {
+
+	// })
+
 }
 
 func TestUnpinShard(t *testing.T) {
