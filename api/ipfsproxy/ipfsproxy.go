@@ -3,6 +3,7 @@ package ipfsproxy
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -270,6 +271,22 @@ func New(cfg *Config) (*Server, error) {
 func (proxy *Server) SetClient(c *rpc.Client) {
 	proxy.rpcClient = c
 	proxy.rpcReady <- struct{}{}
+}
+
+// HTTPAddresses returns the HTTP(s) listening address
+// in host:port format. Useful when configured to start
+// on a random port (0). Returns error when the HTTP endpoint
+// is not enabled.
+func (proxy *Server) HTTPAddresses() ([]string, error) {
+	if len(proxy.listeners) == 0 {
+		return nil, errors.New("the HTTP endpoint is not enabled")
+	}
+	var addrs []string
+	for _, l := range proxy.listeners {
+		addrs = append(addrs, l.Addr().String())
+	}
+
+	return addrs, nil
 }
 
 // Shutdown stops any listeners and stops the component from taking

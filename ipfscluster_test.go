@@ -167,13 +167,13 @@ func createComponents(
 	ctx := context.Background()
 	mock := test.NewIpfsMock(t)
 
-	apiAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", apiPort+i))
-	fmt.Println(apiAddr)
+	// apiAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", apiPort+i))
+	// fmt.Println(apiAddr)
 	// Bind on port 0
-	// apiAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
+	apiAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
 	// Bind on Port 0
-	proxyAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", ipfsProxyPort+i))
-	// proxyAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
+	// proxyAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/127.0.0.1/tcp/%d", ipfsProxyPort+i))
+	proxyAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
 	nodeAddr, _ := ma.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%d", mock.Addr, mock.Port))
 
 	peername := fmt.Sprintf("peer_%d", i)

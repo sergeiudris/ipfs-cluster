@@ -17,6 +17,8 @@ import (
 	"github.com/ipfs/ipfs-cluster/adder/sharding"
 	"github.com/ipfs/ipfs-cluster/allocator/ascendalloc"
 	"github.com/ipfs/ipfs-cluster/api"
+	"github.com/ipfs/ipfs-cluster/api/ipfsproxy"
+	"github.com/ipfs/ipfs-cluster/api/rest"
 	"github.com/ipfs/ipfs-cluster/config"
 	"github.com/ipfs/ipfs-cluster/informer/numpin"
 	"github.com/ipfs/ipfs-cluster/monitor/pubsubmon"
@@ -416,25 +418,41 @@ func TestRestAndProxyAddFileEndpointLocalParam(t *testing.T) {
 	defer shutdownClusters(t, clusters, mock)
 
 	cluster0 := clusters[0]
+	mock0 := mock[0]
+
 	fmt.Printf("%T\n", cluster0)
 	fmt.Printf("%T\n", ctx)
-	mock0 := mock[0]
-	mock1 := mock[1]
+	// mock0 := mock[0]
+	// mock1 := mock[1]
 	fmt.Printf("%+v\n", mock0)
-	fmt.Printf("%+v\n", mock1)
+	// fmt.Printf("%+v\n", mock1)
 
-	// var a interface{}
-	// a = cluster0.apis[0]
-	// api0, ok := a.(*rest.API)
-	// if !ok {
+	var a interface{}
+	a = cluster0.apis[0]
+	api0, _ := a.(*rest.API)
 
-	// }
+	var p interface{}
+	p = cluster0.apis[1]
+	ipfsproxy0, _ := p.(*ipfsproxy.Server)
+
+	apiHTTPAddresses, _ := api0.HTTPAddresses()
+	ipfsproxyHTTPAddresses, _ := ipfsproxy0.HTTPAddresses()
+
+	apiHTTPAddress := apiHTTPAddresses[0]
+	ipfsproxyHTTPAddress := ipfsproxyHTTPAddresses[0]
+
+	fmt.Println(apiHTTPAddress)
+	fmt.Println(ipfsproxyHTTPAddress)
+
 	// api0Refelction := reflect.ValueOf(api0).Elem()
 	// configReflection := api0Refelction.FieldByName("config")
 	// configReflection = reflect.NewAt(configReflection.Type(), unsafe.Pointer(configReflection.UnsafeAddr())).Elem()
 	// fmt.Println(configReflection.Interface())
 
-	resp, err := http.Get("http://localhost:10101/version")
+	fmt.Println(fmt.Sprintf("http://%s/version", apiHTTPAddress))
+
+	// resp, err := http.Get(fmt.Sprintf("http://%s/version", apiHTTPAddress))
+	resp, err := http.Get(fmt.Sprintf("http://%s/api/v0/version", ipfsproxyHTTPAddress))
 	if err != nil {
 		//
 	}
@@ -445,7 +463,6 @@ func TestRestAndProxyAddFileEndpointLocalParam(t *testing.T) {
 	if err != nil {
 		panic(err.Error())
 	}
-
 	fmt.Println(data)
 
 	// fmt.Printf("%v\n", config.Interface())
