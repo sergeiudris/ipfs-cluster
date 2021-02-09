@@ -410,7 +410,7 @@ func TestAddFile(t *testing.T) {
 	})
 }
 
-func TestAddFileLocal(t *testing.T) {
+func TestRestAndProxyAddFileEndpointLocalParam(t *testing.T) {
 	ctx := context.Background()
 	clusters, mock := createClusters(t)
 	defer shutdownClusters(t, clusters, mock)
