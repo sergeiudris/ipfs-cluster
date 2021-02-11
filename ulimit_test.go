@@ -2,6 +2,7 @@ package ipfscluster
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	"golang.org/x/sys/unix"
 )
 
 // we build a cluster image using it's own Dockerfile
@@ -61,4 +63,36 @@ func TestTinyUlimit(t *testing.T) {
 	}
 
 	stdcopy.StdCopy(os.Stdout, os.Stderr, out)
+}
+
+func unixGetLimit() (uint64, uint64, error) {
+	rlimit := unix.Rlimit{}
+	err := unix.Getrlimit(unix.RLIMIT_NOFILE, &rlimit)
+	return rlimit.Cur, rlimit.Max, err
+}
+
+func unixSetLimit(soft uint64, max uint64) error {
+	rlimit := unix.Rlimit{
+		Cur: soft,
+		Max: max,
+	}
+	return unix.Setrlimit(unix.RLIMIT_NOFILE, &rlimit)
+}
+
+func TestUlimit(t *testing.T) {
+
+	cur, max, _ := unixGetLimit()
+
+	fmt.Printf("cur %d, max %d \n", cur, max)
+
+	unixSetLimit(4, 4)
+
+	cur, max, _ = unixGetLimit()
+
+	fmt.Printf("cur %d, max %d \n", cur, max)
+
+}
+
+func TestCtl(t *testing.T) {
+
 }
