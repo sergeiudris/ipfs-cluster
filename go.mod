@@ -3,8 +3,14 @@ module github.com/ipfs/ipfs-cluster
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/exporter/prometheus v0.2.0
+	github.com/Microsoft/go-winio v0.4.16 // indirect
 	github.com/blang/semver v3.5.1+incompatible
+	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/dgraph-io/badger v1.6.2
+	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/docker v20.10.3+incompatible
+	github.com/docker/go-connections v0.4.0 // indirect
+	github.com/docker/go-units v0.4.0 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.2
@@ -61,6 +67,8 @@ require (
 	github.com/multiformats/go-multiaddr-dns v0.2.0
 	github.com/multiformats/go-multicodec v0.1.6
 	github.com/multiformats/go-multihash v0.0.14
+	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.9.0
 	github.com/rs/cors v1.7.0
