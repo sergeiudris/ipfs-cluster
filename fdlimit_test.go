@@ -18,6 +18,7 @@ import (
 // start adding/removing files (whatever needed) to recreate the error in issue#1180
 // introduce the changes to code - auto increase of fd limit and env variables to turn it on/off
 // now we can test before/after: with tiny fd limit it should fail, with auto increase should work
+// metrics: tests should show with what parameters of fd limit and badger store happens what
 
 func TestFDTinyLimit(t *testing.T) {
 	ctx := context.Background()
