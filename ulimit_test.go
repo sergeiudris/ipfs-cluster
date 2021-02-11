@@ -20,7 +20,7 @@ import (
 // now we can test before/after: with tiny fd limit it should fail, with auto increase should work
 // metrics: tests should show with what parameters of fd limit and badger store happens what
 
-func TestFDTinyLimit(t *testing.T) {
+func TestTinyUlimit(t *testing.T) {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
