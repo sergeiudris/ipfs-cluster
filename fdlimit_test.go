@@ -12,6 +12,13 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 )
 
+// we build a cluster image using it's own Dockerfile
+// then we run the cluster in dokcer containers on the same network (as if docker-compose)
+// then with docker exec change fd limit in cluster node(s)
+// start adding/removing files (whatever needed) to recreate the error in issue#1180
+// introduce the changes to code - auto increase of fd limit and env variables to turn it on/off
+// now we can test before/after: with tiny fd limit it should fail, with auto increase should work
+
 func TestFDTinyLimit(t *testing.T) {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
